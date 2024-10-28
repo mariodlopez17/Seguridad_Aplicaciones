@@ -61,11 +61,11 @@ jobs:
         }
 
         # Copiar el archivo JAR a la VM Windows
-        Copy-Item -Path dist\Login.jar -Destination "C:\Users\ML\Desktop\Pruebas\Login.jar" -ToSession $session
+        Copy-Item -Path dist\Login.jar -Destination "C:\Users\ML\Desktop\Pruebas\Seguridad_aplicaciones\Login\src\Login.jar" -ToSession $session
 
         # Ejecutar la aplicación en la VM Windows
         Invoke-Command -Session $session -ScriptBlock {
-          Start-Process -NoNewWindow -FilePath 'java' -ArgumentList '-jar', 'C:\Users\ML\Desktop\Pruebas\Login.jar'
+          Start-Process -NoNewWindow -FilePath 'java' -ArgumentList '-jar', 'C:\Users\ML\Desktop\Pruebas\Seguridad_aplicaciones\Login\src\Login.jar'
         }
 
         # Cerrar la sesión remota
