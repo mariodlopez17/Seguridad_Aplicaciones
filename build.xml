@@ -1,11 +1,31 @@
-<project name="Proyecto" default="jar">
+<project name="ProyectoJava" default="jar" basedir=".">
+  
+  <!-- Directorios -->
+  <property name="src.dir" value="Login/src"/> <!-- Ruta relativa al directorio del código fuente -->
+  <property name="build.dir" value="build"/>
+  <property name="dist.dir" value="dist"/>
+  <property name="main.class" value="paquete.principal.MainClass"/> <!-- Cambia "paquete.principal.MainClass" por tu clase principal -->
+
+  <!-- Limpiar directorios de compilación y distribución -->
   <target name="clean">
-    <delete dir="dist"/>
+    <delete dir="${build.dir}"/>
+    <delete dir="${dist.dir}"/>
   </target>
 
-  <target name="jar" depends="clean">
-    <mkdir dir="dist"/>
-    <javac srcdir="src" destdir="dist"/>
-    <jar destfile="dist/Login.jar" basedir="dist"/>
+  <!-- Compilar el código fuente -->
+  <target name="compile" depends="clean">
+    <mkdir dir="${build.dir}"/>
+    <javac srcdir="${src.dir}" destdir="${build.dir}"/>
   </target>
+
+  <!-- Crear el archivo JAR -->
+  <target name="jar" depends="compile">
+    <mkdir dir="${dist.dir}"/>
+    <jar destfile="${dist.dir}/Login.jar" basedir="${build.dir}">
+      <manifest>
+        <attribute name="Main-Class" value="${main.class}"/>
+      </manifest>
+    </jar>
+  </target>
+
 </project>
