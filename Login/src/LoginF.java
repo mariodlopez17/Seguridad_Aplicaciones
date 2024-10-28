@@ -1,7 +1,7 @@
 import javax.swing.*;
 
 public class LoginF extends JFrame {
-
+//hola esto es una prueba
     public LoginF() {
         // Configura el título de la ventana
         setTitle("Login");
