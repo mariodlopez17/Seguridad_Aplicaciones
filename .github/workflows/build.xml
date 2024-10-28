@@ -1,0 +1,11 @@
+<project name="Proyecto" default="jar">
+  <target name="clean">
+    <delete dir="dist"/>
+  </target>
+
+  <target name="jar" depends="clean">
+    <mkdir dir="dist"/>
+    <javac srcdir="src" destdir="dist"/>
+    <jar destfile="dist/Login.jar" basedir="dist"/>
+  </target>
+</project>
