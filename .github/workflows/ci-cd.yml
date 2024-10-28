@@ -39,22 +39,35 @@ jobs:
         unzip dependency-check-6.5.0-release.zip -d dependency-check
         ./dependency-check/bin/dependency-check.bat --project CI-CD-Scan --out reports --scan .
 
-    # Paso 6: Desplegar en VM Windows usando WinRM
-    - name: Deploy to VM with WinRM
-      uses: m1nt-co/pswinrm@v1
-      with:
-        host: ${{ secrets.VM_IP }}
-        username: ${{ secrets.VM_USER }}
-        password: ${{ secrets.VM_PASSWORD }}
-        script: |
-          # Crear la carpeta de destino si no existe
+    # Paso 6: Desplegar en VM Windows usando PowerShell Remoting
+    - name: Deploy to VM with PowerShell Remoting
+      shell: pwsh
+      env:
+        VM_USER: ${{ secrets.VM_USER }}
+        VM_IP: ${{ secrets.VM_IP }}
+        VM_PASSWORD: ${{ secrets.VM_PASSWORD }}
+      run: |
+        $password = ConvertTo-SecureString $env:VM_PASSWORD -AsPlainText -Force
+        $credential = New-Object System.Management.Automation.PSCredential ($env:VM_USER, $password)
+
+        # Crear sesión remota a la VM
+        $session = New-PSSession -ComputerName $env:VM_IP -Credential $credential -Authentication Basic -UseSSL
+
+        # Crear la carpeta de destino si no existe
+        Invoke-Command -Session $session -ScriptBlock {
           if (!(Test-Path -Path 'C:\Users\ML\Desktop\Pruebas')) {
             New-Item -ItemType Directory -Path 'C:\Users\ML\Desktop\Pruebas'
           }
+        }
 
-          # Copiar el archivo JAR generado a la VM Windows
-          Copy-Item -Path dist\Login.jar -Destination 'C:\Users\ML\Desktop\Pruebas\Login.jar'
+        # Copiar el archivo JAR a la VM Windows
+        Copy-Item -Path dist\Login.jar -Destination "C:\Users\ML\Desktop\Pruebas\Login.jar" -ToSession $session
 
-          # Ejecutar la aplicación en la VM Windows
+        # Ejecutar la aplicación en la VM Windows
+        Invoke-Command -Session $session -ScriptBlock {
           Start-Process -NoNewWindow -FilePath 'java' -ArgumentList '-jar', 'C:\Users\ML\Desktop\Pruebas\Login.jar'
+        }
+
+        # Cerrar la sesión remota
+        Remove-PSSession -Session $session
 
