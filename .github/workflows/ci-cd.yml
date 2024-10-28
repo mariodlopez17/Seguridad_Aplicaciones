@@ -33,7 +33,8 @@ jobs:
       run: |
         curl -LO https://github.com/jeremylong/DependencyCheck/releases/download/v6.5.0/dependency-check-6.5.0-release.zip
         unzip dependency-check-6.5.0-release.zip -d dependency-check
-        cmd /c dependency-check\\bin\\dependency-check.bat --project CI-CD-Scan --out reports --scan .
+        cd dependency-check/dependency-check
+        cmd /c bin\\dependency-check.bat --project CI-CD-Scan --out ../../reports --scan ../../
 
     # Paso 5: Desplegar en VM Windows usando PowerShell Remoting
     - name: Deploy to VM with PowerShell Remoting
