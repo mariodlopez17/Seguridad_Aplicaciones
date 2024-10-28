@@ -33,41 +33,41 @@ jobs:
     # run: ant -f build.xml test
 
     ## Paso 5: Escaneo de vulnerabilidades con OWASP Dependency-Check
-    #- name: Run OWASP Dependency-Check
-     # run: |
-     #   curl -LO https://github.com/jeremylong/DependencyCheck/releases/download/v6.5.0/dependency-check-6.5.0-release.zip
-     #   unzip dependency-check-6.5.0-release.zip -d dependency-check
-     #   ./dependency-check/bin/dependency-check.bat --project CI-CD-Scan --out reports --scan .
+    - name: Run OWASP Dependency-Check
+      run: |
+        curl -LO https://github.com/jeremylong/DependencyCheck/releases/download/v6.5.0/dependency-check-6.5.0-release.zip
+        unzip dependency-check-6.5.0-release.zip -d dependency-check
+        ./dependency-check/bin/dependency-check.bat --project CI-CD-Scan --out reports --scan .
 
     # Paso 6: Desplegar en VM Windows usando PowerShell Remoting
-    #- name: Deploy to VM with PowerShell Remoting
-      #shell: pwsh
-      #env:
-        #VM_USER: ${{ secrets.VM_USER }}
-       # VM_IP: ${{ secrets.VM_IP }}
-       # VM_PASSWORD: ${{ secrets.VM_PASSWORD }}
-      #run: |
-        #$password = ConvertTo-SecureString $env:VM_PASSWORD -AsPlainText -Force
-        #$credential = New-Object System.Management.Automation.PSCredential ($env:VM_USER, $password)
+    - name: Deploy to VM with PowerShell Remoting
+      shell: pwsh
+      env:
+        VM_USER: ${{ secrets.VM_USER }}
+        VM_IP: ${{ secrets.VM_IP }}
+        VM_PASSWORD: ${{ secrets.VM_PASSWORD }}
+      run: |
+        $password = ConvertTo-SecureString $env:VM_PASSWORD -AsPlainText -Force
+        $credential = New-Object System.Management.Automation.PSCredential ($env:VM_USER, $password)
 
         # Crear sesión remota a la VM
-        #$session = New-PSSession -ComputerName $env:VM_IP -Credential $credential -Authentication Basic -UseSSL
+        $session = New-PSSession -ComputerName $env:VM_IP -Credential $credential -Authentication Basic -UseSSL
 
         # Crear la carpeta de destino si no existe
-        #Invoke-Command -Session $session -ScriptBlock {
-          #if (!(Test-Path -Path 'C:\Users\ML\Desktop\Pruebas')) {
-         #   New-Item -ItemType Directory -Path 'C:\Users\ML\Desktop\Pruebas'
-        #  }
-        #}
+        Invoke-Command -Session $session -ScriptBlock {
+          if (!(Test-Path -Path 'C:\Users\ML\Desktop\Pruebas')) {
+           New-Item -ItemType Directory -Path 'C:\Users\ML\Desktop\Pruebas'
+          }
+        }
 
         # Copiar el archivo JAR a la VM Windows
-        #Copy-Item -Path dist\Login.jar -Destination "C:\Users\ML\Desktop\Pruebas\Seguridad_aplicaciones\Login\src\Login.jar" -ToSession $session
+        Copy-Item -Path dist\Login.jar -Destination "C:\Users\ML\Desktop\Pruebas\Seguridad_aplicaciones\Login\src\Login.jar" -ToSession $session
 
         # Ejecutar la aplicación en la VM Windows
-        #Invoke-Command -Session $session -ScriptBlock {
-         # Start-Process -NoNewWindow -FilePath 'java' -ArgumentList '-jar', 'C:\Users\ML\Desktop\Pruebas\Seguridad_aplicaciones\Login\src\Login.jar'
-        #}
+        Invoke-Command -Session $session -ScriptBlock {
+          Start-Process -NoNewWindow -FilePath 'java' -ArgumentList '-jar', 'C:\Users\ML\Desktop\Pruebas\Seguridad_aplicaciones\Login\src\Login.jar'
+        }
 
         # Cerrar la sesión remota
-       # Remove-PSSession -Session $session
+        Remove-PSSession -Session $session
 
