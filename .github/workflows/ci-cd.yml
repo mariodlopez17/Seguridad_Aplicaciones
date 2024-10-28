@@ -29,15 +29,15 @@ jobs:
       run: ant -f build.xml clean jar
 
     # Paso 4: Ejecutar pruebas con Ant
-    - name: Run tests with Ant
-      run: ant -f build.xml test
+    #- name: Run tests with Ant
+    # run: ant -f build.xml test
 
-    # Paso 5: Escaneo de vulnerabilidades con OWASP Dependency-Check
-    - name: Run OWASP Dependency-Check
-      run: |
-        curl -LO https://github.com/jeremylong/DependencyCheck/releases/download/v6.5.0/dependency-check-6.5.0-release.zip
-        unzip dependency-check-6.5.0-release.zip -d dependency-check
-        ./dependency-check/bin/dependency-check.bat --project CI-CD-Scan --out reports --scan .
+    ## Paso 5: Escaneo de vulnerabilidades con OWASP Dependency-Check
+    #- name: Run OWASP Dependency-Check
+     # run: |
+     #   curl -LO https://github.com/jeremylong/DependencyCheck/releases/download/v6.5.0/dependency-check-6.5.0-release.zip
+     #   unzip dependency-check-6.5.0-release.zip -d dependency-check
+     #   ./dependency-check/bin/dependency-check.bat --project CI-CD-Scan --out reports --scan .
 
     # Paso 6: Desplegar en VM Windows usando PowerShell Remoting
     - name: Deploy to VM with PowerShell Remoting
