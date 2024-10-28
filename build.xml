@@ -1,10 +1,11 @@
 <project name="ProyectoJava" default="jar" basedir=".">
   
   <!-- Directorios -->
-  <property name="src.dir" value="Login/src"/> <!-- Ruta relativa al directorio del código fuente -->
+  <property name="src.dir" value="Login/src"/>
   <property name="build.dir" value="build"/>
   <property name="dist.dir" value="dist"/>
-  <property name="main.class" value="paquete.principal.MainClass"/> <!-- Cambia "paquete.principal.MainClass" por tu clase principal -->
+  <property name="test.dir" value="test"/>  <!-- Directorio de pruebas -->
+  <property name="main.class" value="paquete.principal.MainClass"/>
 
   <!-- Limpiar directorios de compilación y distribución -->
   <target name="clean">
@@ -16,6 +17,30 @@
   <target name="compile" depends="clean">
     <mkdir dir="${build.dir}"/>
     <javac srcdir="${src.dir}" destdir="${build.dir}"/>
+  </target>
+
+  <!-- Compilar pruebas -->
+  <target name="compile-test" depends="compile">
+    <mkdir dir="${build.dir}/test"/>
+    <javac srcdir="${test.dir}" destdir="${build.dir}/test" classpath="${build.dir}"/>
+  </target>
+
+  <!-- Ejecutar pruebas con JUnit -->
+  <target name="test" depends="compile-test">
+    <junit printsummary="true">
+      <classpath>
+        <path location="${build.dir}"/>
+        <path location="${build.dir}/test"/>
+        <!-- Agrega el .jar de JUnit si es necesario -->
+      </classpath>
+      <batchtest todir="${build.dir}/test-results">
+        <fileset dir="${test.dir}">
+          <include name="**/*Test.java"/>
+        </fileset>
+      </batchtest>
+      <formatter type="plain"/>
+      <formatter type="xml"/>
+    </junit>
   </target>
 
   <!-- Crear el archivo JAR -->
